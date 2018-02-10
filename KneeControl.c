@@ -6,11 +6,11 @@
 #include "pwm.h"
 
 /*Switching parameters*/
-#define ES_SWF_switching_heeloff 510      //State 0 to State 2 (Early Stance to Swing Flexion)
+#define ES_SWF_switching_heeloff 520      //State 0 to State 2 (Early Stance to Swing Flexion)
 // State 1, pre-swing, not currently in use.
 #define SWF_SWE_switchin_angle 35         //State 2 to State 3 (Swing Flexion to Swing Extension)
 #define SWE_Idle_switching_angle 5        //earlier 4 State 3 to State 4  (Swing Extension to Idle)
-#define ES_SWF_switching_heelstrike 545   //State 4 to State 0  (Idle to Early Stance)
+#define ES_SWF_switching_heelstrike 570   //State 4 to State 0  (Idle to Early Stance)
 
 /*State Equilibrium Setup*/
 #define ES_equilibrium 8      // Earlier 5 position in degree
@@ -28,11 +28,11 @@
 #define PRE_SWING_damping 0.001
 
 /*State 2:  Swing Flexion Parameter*/
-#define SW_FLEXION_stiffness 0.20   // Previous St stiffness 0.22  Previous St switching = 0 Present St Eq.= 60
+#define SW_FLEXION_stiffness 0.22   // Previous St stiffness 0.22  Previous St switching = 0 Present St Eq.= 60
 #define SW_FLEXION_damping 0.005    // Previous damping .005
 
 /*State 3:  Swing Extension Parameter*/
-#define SW_EXTENSION_stiffness 0.2  // Previous St stiffness 0.18 Previous St switching = 38 Present St Eq.= 2
+#define SW_EXTENSION_stiffness 0.21  // Previous St stiffness 0.18 Previous St switching = 38 Present St Eq.= 2
 #define SW_EXTENSION_damping 0.004
 
 /*State 4:  IDLE Parameter*/

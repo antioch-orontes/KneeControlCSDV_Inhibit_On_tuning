@@ -138,7 +138,7 @@ INT16 main(void)
 
         /* Read Analog Voltage from Channel 2 AN2 (LoadCell1)*/
         LoadCell1 = Samp2Voltage(ReadAnalogSample(2));
-        LoadCell1 = Samp2Voltage(ReadAnalogSample(4));
+        LoadCell2 = Samp2Voltage(ReadAnalogSample(4));
 
         __delay_ms(100);
         IEC0bits.T1IE = 1;// Enable Timer1 interrupt
@@ -213,7 +213,7 @@ INT16 main(void)
                 duty_cycle=100*percent;
 
 
-                CANSendAll(angle,Sum_LoadCell,Diff_LoadCell,st);
+                CANSendAll(angle,desired_torque,Loadcell1,Loadcell2);
                 //CANSendAll(float flt_data_1, float flt_data_2, float flt_data_3, int int_data_2);
                 /*range of data: CANSendAll(flt_data_1= -3276.7 to 3276.7, flt_data_2 = -3276.7 to 3276.7, int_data_1 = 0 to 65535,int_data_2 = 0 to 65535)*/
 
