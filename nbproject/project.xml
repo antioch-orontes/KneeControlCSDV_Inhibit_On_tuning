@@ -3,7 +3,7 @@
     <type>com.microchip.mplab.nbide.embedded.makeproject</type>
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/make-project/1">
-            <name>dsPicCAN_KneeControlCSDV_Inhibit_On_tuning_NewLoadCell_2.24_2</name>
+            <name>dsPicCAN_KneeControlCSDV_Inhibit_On_tuning_NewLoadCell_2.25</name>
             <creation-uuid>1b1c1baa-bfe2-4f3d-ad0b-00303f90749c</creation-uuid>
             <make-project-type>0</make-project-type>
             <c-extensions>c</c-extensions>

@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project>
-  <executable name="dist/default/production/dsPicCAN_KneeControlCSDV_Inhibit_On_tuning_NewLoadCell_2.24_2.production.elf">
+  <executable name="dist/default/production/dsPicCAN_KneeControlCSDV_Inhibit_On_tuning_NewLoadCell_2.25.production.elf">
     <memory name="data">
       <units>bytes</units>
       <length>16384</length>
-      <used>972</used>
-      <free>15412</free>
+      <used>980</used>
+      <free>15404</free>
     </memory>
     <memory name="program">
       <units>bytes</units>
       <length>131328</length>
-      <used>20130</used>
-      <free>111198</free>
+      <used>20181</used>
+      <free>111147</free>
     </memory>
   </executable>
 </project>

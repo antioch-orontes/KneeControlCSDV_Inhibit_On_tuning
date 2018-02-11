@@ -24,7 +24,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=dsPicCAN_KneeControlCSDV_Inhibit_On_tuning_NewLoadCell_2.24_2
+PROJECTNAME=dsPicCAN_KneeControlCSDV_Inhibit_On_tuning_NewLoadCell_2.25
 
 # Active Configuration
 DEFAULTCONF=default
