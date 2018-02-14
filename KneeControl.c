@@ -1,4 +1,10 @@
-//Two loadcell data
+/*
+Name: Knee Control State Transition Parameters
+Date: 02/13/2018
+Created by: Md Rejwanul Haque
+Latest revisor: Cosmo Chou
+Comments: Cleaned code, updated state transition variables, added att'l state..
+*/
 
 #include "KneeControl.h"
 #include "StateFormulas.h"
@@ -7,45 +13,71 @@
 #include <math.h>
 #include "pwm.h"
 
-/*Switching parameter*/
+//Switching Parameters
+// State 4 (Idle Stance) to State 0 (Early Stance) characterized by a heelstrike.
+#define heelstrike_sum 950      //(Optional) Sum of load cell readings must exceed this value to register heelstrike.
+#define heelstrike_diff 40      //Difference of load cell readings must fall below this value to register heelstrike. (Difference value decreases for heel-biased loads.)
+#define heelstrike_anglemax 5   //Angle of knee must be within this range to register heelstrike.
+#define heelstrike_anglemin 0
+
+// State 0 (Early Stance) to State 1 (Pre-Swing Stance) characterized by maximum knee flexion after absorbing heelstrike load.
+#define stanceflex_angle 10     //Angle of knee must be greater than this value to trigger transition.
+#define stanceflex_sum 965      //(Optional) Sum of load cell readings must be less than this value to trigger transition (force registered decreases after initial impact.)
+#define stanceflex_diff 25      //(Optional) Difference of load cell readings must be less than this value to trigger transition (Difference value increases for toe-biased loads.)
+
+// State 1 (Pre-Swing Stance) to State 2 (Swing Flexion) characterized by a toe-off.
+#define toeoff_sum 950        //(Optional) Sum of load cell readings must exceed this value to register heelstrike. (Axial force increases during toe-off as user pushes off from ground.)
+#define toeoff_diff 80        //Difference of load cell readings must exceed this value to register heelstrike. (Difference value increases for toe-biased loads.)
+#define toeoff_anglemax 10    //Angle of knee must be within this range to register toe-off.
+#define toeoff_anglemin 0
+
+// State 2 (Swing Flexion) to State 3 (Swing Extension) characterized by knee exceeding a flexion threshold.
+// For future models: Is it possible to vary flexion soft ceiling angle as a function of walking speed?
+#define swingflex_angle 40    //Angle of knee must exceed this value to transition to extension.
+#define swingflex_sum 950     //Sum of load cell readings must be less than this value to transition. As leg is now airborne and sustaining no load, axial force should decrease.
+#define swingflex_diff 60     //As leg flexes, it approaches being parallel with the ground. The moment about the leg induced the gravity causes the difference between the two load cells to increase.
+
+//State 3 (Swing Extension) to State 4 (Idle Stance) characterized by knee exceeding an extension threshold.
+#define swingext_angle 5      //Angle of knee must fall below this value to transition.
+#define swingext_sum 925      //As leg swings back down, centripetal force caused by swing acceleration causes 'ghost' axial force to register. Knee decelerates as it nears equilibrium, thus must fall below this value to transition.
+#define swingext_diff 50      //As leg swings back down, difference must decrease past this value to account for leg approaching perpendicularity with the ground. (Just realized that this only applies on level surfaces. May need to reconsider methodology, test on inclines.)
+
+/*
+
+Old values preserved here.
+
 #define ES_SWF_switching_heeloff 950   //State 0 to State 0 (Early_stance to Swing_flexion)
-
 #define SWF_SWE_switchin_angle 40  //State 2 to State 3 (Swing_flexion to Swing_extension)
-
 #define SWE_Idle_switching_angle 5  //earlier 4 State 3 to State 4  (Swing_extension to Idle)
-
 #define ES_SWF_switching_heelstrike 1000   //State 4 to State 0  (Idle to Early_stance)
 
+*/
 
+//State Equilibrium Setup
+//Target equilibriums for each state defined below.
+#define ES_equilibrium 10     // State 0: Early Stance
+#define PSW_equilibrium 8     // State 1: Pre-Swing Stance
+#define SWF_equilibrium 40    // State 2: Swing Flexion
+#define SWE_equilibrium 5     // State 3: Swing Extension
+#define IDLE_equilibrium 5    // State 4: Idle Stance
 
-/*State Equilibrium Setup*/
-#define ES_equilibrium 8   // earlier 5 position in degree
-#define PSW_equilibrium 20    // position in degree -3
-#define SWF_equilibrium 50     // position in degree earlier 55
-#define SWE_equilibrium 6     //earlier 3  position in degree
-#define IDLE_equilibrium 8     // earlier 4 position in degree
-
-
-/*State 0:  Early Stance Parameter*/
-#define EStance_stiffness 1.80     // earlier 1.9 Previous St Eq.= 0 Present St Eq.= 0
-#define EStance_damping 0.0005  //earlier .001
-
-/*State 1:  PRE_SWING Parameter*/
-#define PRE_SWING_stiffness 0.07               // Previous St Eq.= 0 Present St Eq.= 20
-#define PRE_SWING_damping 0.001
-
-/*State 2:  SW_FLEXION Parameter*/
-#define SW_FLEXION_stiffness 0.24     //previos St stiffness 0.22  Previous St switching = 0 Present St Eq.= 60
-#define SW_FLEXION_damping 0.005 // previous damping .005
-
-/*State 3:  SW_EXTENSION Parameter*/
-#define SW_EXTENSION_stiffness 0.24    //previos St stiffness 0.18 // Previous St switching = 38 Present St Eq.= 2
-#define SW_EXTENSION_damping 0.006
-
-/*State 4:  IDLE Parameter*/
-#define IDLE_stiffness 0.45     // Previous St switching = 2 Present St switching = 2
-#define IDLE_damping 0.005
-
+//State Parameter Setup
+//Target stiffness and damping for each state defined blow.
+// State 0: Early Stance
+#define ES_stiffness 1.50
+#define ES_damping 0.0005
+// State 1: Pre-Swing Stance
+#define PSW_stiffness 0.6
+#define PSW_damping 0.001
+// State 2: Swing Flexion
+#define SWF_stiffness 0.24
+#define SWF_damping 0.005
+// State 3: Swing Extension
+#define SWE_stiffness 0.22
+#define SWE_damping 0.006
+// State 4: Idle Stance
+#define IDLE_stiffness 0.40
+#define IDLE_damping 0.006
 
 enum states {
         ST_EARLY_STANCE,
@@ -54,23 +86,31 @@ enum states {
         ST_SW_EXTENSION,
         IDLE,
 };
-//enum states state = ST_EARLY_STANCE;
 
 struct st_impedance knee_st_impedance;
 enum states state = IDLE;
 double impedance = 0;
-double desired_force = 0.0, desired_current = 0;
-float percent = 0,percent_new = 0,percent_old = 0;  // 0.5 percent means 50% duty cycle
-float peak_current = 20.0;  //A
+double desired_force = 0.0;
+double desired_current = 0;
+float percent = 0;
+float percent_new = 0;
+float percent_old = 0;  // Duty cycle percentage defined from 0 to 1.
+float peak_current = 20.0;  // Current defined in amperes.
+
 /* Duty cycle range for swing_flexion is 10% to 15%*/
-float duty_cycle_max = 0.22; // which means 20 percent
+
+float duty_cycle_max = 0.22;
 float sw_flexion_pwm_max = 0.15;
 float sw_extension_pwm_max = 0.15;
 float late_stance_pwm_max = 0.4;
-// const number for appropriate time delay  of ST_EARLY_STANCE
+
+// const number for appropriate time delay of ST_EARLY_STANCE
+
 double count = 0;
 double heel_sensor_toe_off = 180; //earlier it was 0.65
+
 //double swing_flexion_angle = 38;
+
 float tau_friction = 1.0;
 float sum_loadcell,diff_loadcell;
 
