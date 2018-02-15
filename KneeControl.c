@@ -1,10 +1,10 @@
-/*
+/*******************************************************
    Name: Knee Control State Transition Parameters
    Date: 02/13/2018
    Created by: Md Rejwanul Haque
    Latest revisor: Cosmo Chou
    Comments: Cleaned code, updated state transition variables, added att'l state.
- */
+ *****************************************************/
 
 #include "KneeControl.h"
 #include "StateFormulas.h"

@@ -6,21 +6,20 @@
  */
 
 #ifndef TIMER1_H
-#define	TIMER1_H
+#define TIMER1_H
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
-    void InitTimer1( void );
-    uint32_t millis();
-    float micros();
-    int control_loop();
+void InitTimer1( void );
+uint32_t millis();
+float micros();
+int control_loop();
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* TIMER1_H */
-
+#endif  /* TIMER1_H */

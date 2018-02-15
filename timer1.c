@@ -25,11 +25,11 @@ int flag = 0;
 
 void __attribute__((__interrupt__, no_auto_psv)) _T1Interrupt(void)
 {
-    /* Interrupt Service Routine code goes here */
-    IFS0bits.T1IF = 0; // Clear Timer1 Interrupt Flag
-    timer1_millis += 1;
-    timer1_overflow_count += 1;
-    flag = !flag;
+        /* Interrupt Service Routine code goes here */
+        IFS0bits.T1IF = 0; // Clear Timer1 Interrupt Flag
+        timer1_millis += 1;
+        timer1_overflow_count += 1;
+        flag = !flag;
 }
 
 /******************************************************************************
@@ -48,17 +48,17 @@ void __attribute__((__interrupt__, no_auto_psv)) _T1Interrupt(void)
 
 void InitTimer1( void )
 {
-    // initialization code for 16-bit timer mode
-    T1CONbits.TON = 0;// Disable Timer
-    T1CONbits.TCS = 0;// Select internal instruction cycle clock
-    T1CONbits.TGATE = 0;// Disable Gated Timer mode
-    T1CONbits.TCKPS = 0b01;// 1:8 prescale value i tick is 0.2004 us
-    TMR1 = 0x00; // Clear timer register
-    PR1 = 4990; // Load the period value    one peorid is 1ms (1 ms / 0.2004 us)
-    IPC0bits.T1IP = 0x01;// Set Timer1 Interrupt Priority Level
-    IFS0bits.T1IF = 0;// Clear Timer1 Interrupt Flag
-    //IEC0bits.T1IE = 1;// Enable Timer1 interrupt
-    T1CONbits.TON = 1;// Start Timer
+        // initialization code for 16-bit timer mode
+        T1CONbits.TON = 0;// Disable Timer
+        T1CONbits.TCS = 0;// Select internal instruction cycle clock
+        T1CONbits.TGATE = 0;// Disable Gated Timer mode
+        T1CONbits.TCKPS = 0b01;// 1:8 prescale value i tick is 0.2004 us
+        TMR1 = 0x00; // Clear timer register
+        PR1 = 4990; // Load the period value    one peorid is 1ms (1 ms / 0.2004 us)
+        IPC0bits.T1IP = 0x01;// Set Timer1 Interrupt Priority Level
+        IFS0bits.T1IF = 0;// Clear Timer1 Interrupt Flag
+        //IEC0bits.T1IE = 1;// Enable Timer1 interrupt
+        T1CONbits.TON = 1;// Start Timer
 }
 
 /******************************************************************************
@@ -75,7 +75,7 @@ void InitTimer1( void )
  * Overview:
  *****************************************************************************/
 uint32_t millis() {
-  return timer1_millis;
+        return timer1_millis;
 }
 
 /******************************************************************************
@@ -93,9 +93,9 @@ uint32_t millis() {
  *****************************************************************************/
 
 float micros() {
-  return((timer1_overflow_count * PR1) + TMR1)*(0.2004);  //us
+        return ((timer1_overflow_count * PR1) + TMR1)*(0.2004); //us
 }
 
 int control_loop(){
-    return (flag);
+        return (flag);
 }

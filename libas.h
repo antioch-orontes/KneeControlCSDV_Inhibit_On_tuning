@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   libas.h
  * Author: dcl
  *
@@ -6,25 +6,25 @@
  */
 
 #ifndef LIBAS_H
-#define	LIBAS_H
+#define LIBAS_H
 
-#ifdef	__cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
 #include <stdio.h>
 typedef union
 {
-	uint8_t data;
-	struct
-	{
-		uint8_t OCF : 1;
-		uint8_t COF : 1;
-		uint8_t LIN : 1;
-		uint8_t MagInc : 1;
-		uint8_t MagDec:1;
-		uint8_t EvenPar:1;
-	};
+								uint8_t data;
+								struct
+								{
+																uint8_t OCF : 1;
+																uint8_t COF : 1;
+																uint8_t LIN : 1;
+																uint8_t MagInc : 1;
+																uint8_t MagDec : 1;
+																uint8_t EvenPar : 1;
+								};
 } ASDataFlags;
 
 
@@ -47,9 +47,8 @@ ASDataFlags GetDataFlags(void);
 float GetAngle(void);
 float GetKneeAngle();
 
-#ifdef	__cplusplus
+#ifdef __cplusplus
 }
 #endif
 
-#endif	/* LIBAS_H */
-
+#endif /* LIBAS_H */

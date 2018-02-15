@@ -1,9 +1,9 @@
 /*******************************************************
-Name: Globals.h
-Date: 6/2017
-Created By: Don Truex
-Comments: Include this file in Main.c only, externals.h every were else
-Revision History:
+   Name: Globals.h
+   Date: 6/2017
+   Created By: Don Truex
+   Comments: Include this file in Main.c only, externals.h every were else
+   Revision History:
 
 *******************************************************/
 #ifndef __GLOBALS_H__

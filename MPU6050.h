@@ -1,26 +1,26 @@
 /* ============================================
-I2Cdev device library code is placed under the MIT license
-Copyright (c) 2011 Jeff Rowberg
+   I2Cdev device library code is placed under the MIT license
+   Copyright (c) 2011 Jeff Rowberg
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+   Permission is hereby granted, free of charge, to any person obtaining a copy
+   of this software and associated documentation files (the "Software"), to deal
+   in the Software without restriction, including without limitation the rights
+   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+   copies of the Software, and to permit persons to whom the Software is
+   furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
+   The above copyright notice and this permission notice shall be included in
+   all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-===============================================
-*/
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+   THE SOFTWARE.
+   ===============================================
+ */
 #include <stdint.h>        /* Includes uint16_t definition                    */
 
 //#define MPU6050_ADDRESS 0b11010010 // Address with end write bit
@@ -143,20 +143,20 @@ THE SOFTWARE.
 // This struct hold the imu data including acceleration, gyro, temperature
 struct imu_data
 {
-   int16_t  AcX1 ;
-   int16_t  AcY1 ;
-   int16_t  AcZ1 ;
-   int16_t  Tmp1 ;
-   int16_t  GyX1 ;
-   int16_t  GyY1 ;
-   int16_t  GyZ1 ;
+        int16_t AcX1;
+        int16_t AcY1;
+        int16_t AcZ1;
+        int16_t Tmp1;
+        int16_t GyX1;
+        int16_t GyY1;
+        int16_t GyZ1;
 };
 
 struct imu_angle
 {
-    float x;
-    float y;
-    float z;
+        float x;
+        float y;
+        float z;
 };
 
 // Instantiate Drive and Data objects
@@ -170,13 +170,13 @@ struct imu_angle processImuRaw ( struct imu_data imuMyData, struct imu_data imuB
 
 /*
  * void Get_Accel_Values();
-void Get_Accel_Angles();
-void Setup_MPU6050();
-int MPU6050_Test_I2C();
+   void Get_Accel_Angles();
+   void Setup_MPU6050();
+   int MPU6050_Test_I2C();
 
-void Calibrate_Gyros();
-void Get_Gyro_Rates();
-void Get_Accel_Values();
-void Get_Accel_Angles();
-*/
+   void Calibrate_Gyros();
+   void Get_Gyro_Rates();
+   void Get_Accel_Values();
+   void Get_Accel_Angles();
+ */
 //int MPU6050_Check_Registers();

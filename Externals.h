@@ -1,12 +1,12 @@
 /*******************************************************
-Name: Externals.h
-Date: 6/2017
-Created By: Don Truex
-Comments:  Include this file everywhere except Main.c
-Revision History:
-rev number  date 		by
+   Name: Externals.h
+   Date: 6/2017
+   Created By: Don Truex
+   Comments:  Include this file everywhere except Main.c
+   Revision History:
+   rev number  date     by
 
-*****************************************************/
+ *****************************************************/
 #ifndef __EXTERNALS_H__
 #define __EXTERNALS_H__
 

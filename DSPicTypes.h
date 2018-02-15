@@ -1,9 +1,9 @@
 /*******************************************************
-Name: DSPicTypes.h
-Date: 6/2017
-Created By: Don Truex
-Comments: 
-Revision History:
+   Name: DSPicTypes.h
+   Date: 6/2017
+   Created By: Don Truex
+   Comments:
+   Revision History:
 
 *******************************************************/
 
@@ -22,8 +22,3 @@ typedef  float FLOAT32;
 typedef  long double FLOAT64;
 
 #endif
-
-
-
-
-

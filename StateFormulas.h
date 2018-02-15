@@ -1,4 +1,4 @@
-/* 
+/*
  * Contains methods and variables for each walking state 1--4
  */
 

@@ -7,9 +7,9 @@
     #include <xc.h>
 #elif defined(__C30__)
     #if defined(__dsPIC33E__)
-    	#include <p33Exxxx.h>
+      #include <p33Exxxx.h>
     #elif defined(__dsPIC33F__)
-    	#include <p33Fxxxx.h>
+      #include <p33Fxxxx.h>
     #endif
 #endif
 
@@ -28,12 +28,12 @@
 /******************************************************************************/
 
 /* Refer to the device Family Reference Manual Oscillator section for
-information about available oscillator configurations.  Typically
-this would involve configuring the oscillator tuning register or clock
-switching useing the compiler's __builtin_write_OSCCON functions.
-Refer to the C Compiler for PIC24 MCUs and dsPIC DSCs User Guide in the
-compiler installation directory /doc folder for documentation on the
-__builtin functions.*/
+   information about available oscillator configurations.  Typically
+   this would involve configuring the oscillator tuning register or clock
+   switching useing the compiler's __builtin_write_OSCCON functions.
+   Refer to the C Compiler for PIC24 MCUs and dsPIC DSCs User Guide in the
+   compiler installation directory /doc folder for documentation on the
+   __builtin functions.*/
 
 /* TODO Add clock switching code if appropriate.  An example stub is below.   */
 void ConfigureOscillator(void)
@@ -44,16 +44,15 @@ void ConfigureOscillator(void)
 // F_OSC = 79.84Mhz
 
 
-PLLFBD = 63;
-CLKDIVbits.PLLPOST=0; // N2 = 2
-CLKDIVbits.PLLPRE=1; // N1(1) = 3; N1(0) = 2
+        PLLFBD = 63;
+        CLKDIVbits.PLLPOST=0; // N2 = 2
+        CLKDIVbits.PLLPRE=1; // N1(1) = 3; N1(0) = 2
 // Initiate Clock Switch to Internal FRC with PLL (NOSC = 0b001)
-__builtin_write_OSCCONH(0x01);
-__builtin_write_OSCCONL(OSCCON | 0x01);
+        __builtin_write_OSCCONH(0x01);
+        __builtin_write_OSCCONL(OSCCON | 0x01);
 // Wait for Clock switch to occur
-while(OSCCONbits.COSC != 0b001) {};
+        while(OSCCONbits.COSC != 0b001) {};
 // Wait for PLL to lock
-while(OSCCONbits.LOCK!=1) {};
+        while(OSCCONbits.LOCK!=1) {};
 
 }
-

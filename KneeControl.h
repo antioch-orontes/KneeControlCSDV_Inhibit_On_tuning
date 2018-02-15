@@ -1,7 +1,4 @@
-
-
-#include <stdint.h>        /* Includes uint16_t definition                    */
-
+#include <stdint.h>
 struct st_impedance
 {
         int st;

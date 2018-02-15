@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   AnalogIO.h
  * Author: Zachery
  *
@@ -21,4 +21,3 @@ double Samp2Voltage(unsigned int sample);
 /* DAC Functions and definitions for MCP4912 */
 void DAConfig(); // Must be called before setVoltage(...) is used
 void setVoltage(unsigned int chan, unsigned int voltage_samp);
-

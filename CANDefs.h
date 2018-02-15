@@ -1,9 +1,9 @@
 /*******************************************************
-Name: CanDefs.h
-Date: 6/2017
-Created By: Don Truex
-Comments: CAN module #define
-Revision History:
+   Name: CanDefs.h
+   Date: 6/2017
+   Created By: Don Truex
+   Comments: CAN module #define
+   Revision History:
 
 *******************************************************/
 
@@ -53,4 +53,3 @@ Revision History:
 
 
 #endif
-
