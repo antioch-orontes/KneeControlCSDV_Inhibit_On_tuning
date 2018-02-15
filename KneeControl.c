@@ -1,10 +1,10 @@
 /*
-Name: Knee Control State Transition Parameters
-Date: 02/13/2018
-Created by: Md Rejwanul Haque
-Latest revisor: Cosmo Chou
-Comments: Cleaned code, updated state transition variables, added att'l state..
-*/
+   Name: Knee Control State Transition Parameters
+   Date: 02/13/2018
+   Created by: Md Rejwanul Haque
+   Latest revisor: Cosmo Chou
+   Comments: Cleaned code, updated state transition variables, added att'l state.
+ */
 
 #include "KneeControl.h"
 #include "StateFormulas.h"
@@ -13,7 +13,7 @@ Comments: Cleaned code, updated state transition variables, added att'l state..
 #include <math.h>
 #include "pwm.h"
 
-//Switching Parameters
+// Switching Parameters
 // State 4 (Idle Stance) to State 0 (Early Stance) characterized by a heelstrike.
 #define heelstrike_sum 950      //(Optional) Sum of load cell readings must exceed this value to register heelstrike.
 #define heelstrike_diff 40      //Difference of load cell readings must fall below this value to register heelstrike. (Difference value decreases for heel-biased loads.)
@@ -44,14 +44,14 @@ Comments: Cleaned code, updated state transition variables, added att'l state..
 
 /*
 
-Old values preserved here.
+   Old values preserved here.
 
-#define ES_SWF_switching_heeloff 950   //State 0 to State 0 (Early_stance to Swing_flexion)
-#define SWF_SWE_switchin_angle 40  //State 2 to State 3 (Swing_flexion to Swing_extension)
-#define SWE_Idle_switching_angle 5  //earlier 4 State 3 to State 4  (Swing_extension to Idle)
-#define ES_SWF_switching_heelstrike 1000   //State 4 to State 0  (Idle to Early_stance)
+ #define ES_SWF_switching_heeloff 950   //State 0 to State 0 (Early_stance to Swing_flexion)
+ #define SWF_SWE_switchin_angle 40  //State 2 to State 3 (Swing_flexion to Swing_extension)
+ #define SWE_Idle_switching_angle 5  //earlier 4 State 3 to State 4  (Swing_extension to Idle)
+ #define ES_SWF_switching_heelstrike 1000   //State 4 to State 0  (Idle to Early_stance)
 
-*/
+ */
 
 //State Equilibrium Setup
 //Target equilibriums for each state defined below.
@@ -62,7 +62,7 @@ Old values preserved here.
 #define IDLE_equilibrium 5    // State 4: Idle Stance
 
 //State Parameter Setup
-//Target stiffness and damping for each state defined blow.
+//Target stiffness and damping for each state defined below.
 // State 0: Early Stance
 #define ES_stiffness 1.50
 #define ES_damping 0.0005
@@ -96,21 +96,14 @@ float percent = 0;
 float percent_new = 0;
 float percent_old = 0;  // Duty cycle percentage defined from 0 to 1.
 float peak_current = 20.0;  // Current defined in amperes.
-
-/* Duty cycle range for swing_flexion is 10% to 15%*/
-
 float duty_cycle_max = 0.22;
 float sw_flexion_pwm_max = 0.15;
 float sw_extension_pwm_max = 0.15;
 float late_stance_pwm_max = 0.4;
 
-// const number for appropriate time delay of ST_EARLY_STANCE
+// Constant number for appropriate time delay of early stance.
 
 double count = 0;
-double heel_sensor_toe_off = 180; //earlier it was 0.65
-
-//double swing_flexion_angle = 38;
-
 float tau_friction = 1.0;
 float sum_loadcell,diff_loadcell;
 
@@ -118,244 +111,128 @@ struct st_impedance KneeControl(float knee_angle, float knee_velocity,int16_t ac
 {
         sum_loadcell=load_cell1+load_cell2;
         diff_loadcell=load_cell2-load_cell1;
-        //bool cond_HS = ((knee_angle >= 2)&&(knee_velocity >= 1))? true:false; //Heel Strike condition is met.
-        //bool  cond_HS = (ac_x > 15000) ? true : false;  //Heel Strike condition is met.
-        //printf("%d\n",state);
         switch (state)
         {
-        // state 0
+
+        // State 0: Early Stance
         case ST_EARLY_STANCE:
-                //LATBbits.LATB15 = 1;
-                if (sum_loadcell <= ES_SWF_switching_heeloff) //(for oldcell testing)
+                if (knee_angle <= stanceflex_angle)
                 {
-                        state = ST_SW_FLEXION;
+                        state = ST_PRE_SWING;
                         break;
                 }
-
-
-
-                // if(count >= 600) //650 delay 0.86 sec  (770 for 1 sec) 850
-                //  {
-                //   state = ST_PRE_SWING;
-                //   count=0;
-                //    break;
-                //}
-
-                //CONTROL ACTION  K1 = 2
-
-                impedance = Impedance(knee_angle, knee_velocity,EStance_stiffness,EStance_damping, ES_equilibrium); //Impedance( KneeAngle, Knee_Velocity, K1, B,Theta_E)
-                //impedance = ( impedance > .65) ? 0 : impedance; //if impedance is <=5 then impedance =5 else impedance =impedance
-
-                //printf("\ntau:%f\n",impedance);
-                //desired_current = impedance/210/0.9*1000/37;
+                impedance = Impedance(knee_angle, knee_velocity,ES_stiffness,ES_damping, ES_equilibrium);
                 desired_current = KneeDesiredCurrent (impedance,knee_angle);
-
-                //percent = PIDCurrent(desired_current, current, 0.0001, percent); // calculate the valve_command from the PID controller
                 percent = desired_current/peak_current;
-                //printf("\np:%f\n",-percent);
-                //limit the duty cycle to 25% range, so the current will in the range of 0 to 25%*20A = 0 to 5A
-                // in practical limit to 20% percent
-
                 if (percent >= duty_cycle_max)
                         percent = duty_cycle_max;
                 else if(percent <= -duty_cycle_max)
                         percent = -duty_cycle_max;
-
-
                 //Rate Limiter
                 percent_new = RateLimiter(percent_old,percent);
                 percent_old = percent_new;
-
-                // if (fabsf (percent_new)<=0.06)
-                //   percent_new = 0;
-                //printf("\np:%f\n",percent_new);
-                if (desired_current <= 0) //output the pwm command
+                if (desired_current <= 0)
                         KneeExtension (-percent_new);
                 else if (desired_current >0)
                         KneeFlexion (percent_new);
-
-
                 count++;
-
                 break;
-        //state 1
+
+        // State 1: Pre-Swing Stance
         case ST_PRE_SWING:
-                if (load_cell1 < 132) //(for oldcell testing)
+                if (diff_loadcell >= toeoff_diff)
                 {
                         state = ST_SW_FLEXION;
                         break;
                 }
-
-                //if (knee_angle >=12) //(for oldcell testing)
-                //{
-                //    state = ST_SW_FLEXION;
-                //    break;
-                //}
-
-                //CONTROL ACTION K1 = 1
-                impedance = Impedance(knee_angle, knee_velocity, PRE_SWING_stiffness, PRE_SWING_damping, PSW_equilibrium);
-                //printf("\ntau:%f\n",impedance);
-                //desired_current = impedance/210/0.9*1000/37;
+                impedance = Impedance(knee_angle, knee_velocity, PSW_stiffness, PSW_damping, PSW_equilibrium);
                 desired_current = KneeDesiredCurrent (impedance,knee_angle);
-
-                //percent = PIDCurrent(desired_current, current, 0.0001, percent); // calculate the valve_command from the PID controller
                 percent = desired_current/peak_current;
-                //printf("\np:%f\n",-percent);
-                //limit the duty cycle to 25% range, so the current will in the range of 0 to 25%*20A = 0 to 5A
-                // in practical limit to 20% percent
-
                 if (percent >= duty_cycle_max)
                         percent = duty_cycle_max;
                 else if(percent <= -duty_cycle_max)
                         percent = -duty_cycle_max;
-                //printf("\np:%f\n",-percent);
-
                 //Rate Limiter
                 percent_new = RateLimiter(percent_old,percent);
                 percent_old = percent_new;
-
-                if (desired_current < 0) //output the pwm command
+                if (desired_current <= 0)
                         KneeExtension (-percent_new);
                 else if (desired_current >0)
                         KneeFlexion (percent_new);
                 break;
-        //state 2
+
+        // State 2: Swing Flexion
         case ST_SW_FLEXION:
-                if (knee_angle >= SWF_SWE_switchin_angle)
+                if (knee_angle >= swingflex_angle)
                 {
                         state = ST_SW_EXTENSION;
-                        //state = IDLE;
-                        //Stop(); //stop the motor
                         break;
                 }
-
-                //CONTROL ACTION  0.36
-                impedance = Impedance(knee_angle, knee_velocity, SW_FLEXION_stiffness, SW_FLEXION_damping, SWF_equilibrium); //
-                //impedance = ((impedance <= 4) && (impedance >= 0.0)) ? 4 : impedance;
-
-                //impedance = Impedance(knee_angle, 0.0, 1, 0.01, -20.0);
-                //printf("\ntau:%f\n",impedance);
-                //desired_current = impedance/210/0.9*1000/37;
+                impedance = Impedance(knee_angle, knee_velocity, SWF_stiffness, SWF_damping, SWF_equilibrium);
                 desired_current = KneeDesiredCurrent (impedance,knee_angle);
-                //printf("\nid:%f\n",desired_current);
-                //percent = PIDCurrent(desired_current, current, 0.0001, percent); // calculate the valve_command from the PID controller
                 percent = desired_current/peak_current;
-                //printf("\npercent:%f\n",percent);
-                //limit the duty cycle to 25% range, so the current will in the range of 0 to 25%*20A = 0 to 5A
-                // in practical limit to 20% percent
-
                 if (percent >= sw_flexion_pwm_max)
                         percent = sw_flexion_pwm_max;
                 else if(percent <= -sw_flexion_pwm_max)
                         percent = -sw_flexion_pwm_max;
-                //printf("\np:%f\n",-percent);
-
+                //Rate Limiter
                 percent_new = RateLimiter(percent_old,percent);
                 percent_old = percent_new;
-
-                //printf("\np:%f\n",percent_new);
-
-                if (desired_current < 0) //output the pwm command
+                if (desired_current <= 0)
                         KneeExtension (-percent_new);
                 else if (desired_current >0)
                         KneeFlexion (percent_new);
                 break;
-        //state 3
-        case ST_SW_EXTENSION:
-                //TRISBbits.TRISB15 = 1;
-                //if (heel_sensor >= heel_sensor_toe_off)
-                if (knee_angle <= SWE_Idle_switching_angle)
-                {
-                        //Stop(); //stop the motor
 
-                        //LATBbits.LATB15 = 0;
-                        //__delay_ms(50);
+        // State 3: Swing Extension
+        case ST_SW_EXTENSION:
+                if (knee_angle <= swingext_angle)
+                {
                         state = IDLE;
-                        //state = ST_EARLY_STANCE;
                         break;
                 }
-
-                //CONTROL ACTION 1.5
-
-                impedance = Impedance(knee_angle, knee_velocity, SW_EXTENSION_stiffness, SW_EXTENSION_damping, SWE_equilibrium);
-                //impedance = ((impedance <=-0.1) && (impedance >= -3.7)) ? -3.7 : impedance;
-
-                //printf("\ntau:%f\n",impedance);
-                //desired_current = impedance/210/0.9*1000/37;
+                impedance = Impedance(knee_angle, knee_velocity, SWE_stiffness, SWE_damping, SWE_equilibrium);
                 desired_current = KneeDesiredCurrent (impedance,knee_angle);
-
-                //percent = PIDCurrent(desired_current, current, 0.0001, percent); // calculate the valve_command from the PID controller
                 percent = desired_current/peak_current;
-                //printf("\np:%f\n",-percent);
-                //limit the duty cycle to 25% range, so the current will in the range of 0 to 25%*20A = 0 to 5A
-                // in practical limit to 20% percent
-
                 if (percent >= sw_extension_pwm_max)
                         percent = sw_extension_pwm_max;
                 else if(percent <= -sw_extension_pwm_max)
                         percent = -sw_extension_pwm_max;
-                //printf("\np:%f\n",-percent);
-
                 //Rate Limiter
                 percent_new = RateLimiter(percent_old,percent);
                 percent_old = percent_new;
-
-
-                if (desired_current < 0) //output the pwm command
+                if (desired_current <= 0)
                         KneeExtension (-percent_new);
                 else if (desired_current >0)
                         KneeFlexion (percent_new);
                 break;
 
-
-
-        //state 4
+        // State 4: Idle Stance
         case IDLE:
-
-                // Stop(); //stop the motor
-                if (sum_loadcell >= ES_SWF_switching_heelstrike)
-
+                if (diff_loadcell <= heelstrike_diff)
                 {
                         state = ST_EARLY_STANCE;
                         break;
                 }
-
-
-                //CONTROL ACTION  K1 = 2
-
-                impedance = Impedance(knee_angle, knee_velocity, IDLE_stiffness,IDLE_damping, IDLE_equilibrium); //Impedance( KneeAngle, Knee_Velocity, K1, B,Theta_E)
-
+                impedance = Impedance(knee_angle, knee_velocity, IDLE_stiffness,IDLE_damping, IDLE_equilibrium);
                 desired_current = KneeDesiredCurrent (impedance,knee_angle);
-
                 percent = desired_current/peak_current;
                 if (percent >= duty_cycle_max)
                         percent = duty_cycle_max;
                 else if(percent <= -duty_cycle_max)
                         percent = -duty_cycle_max;
-
-
                 //Rate Limiter
                 percent_new = RateLimiter(percent_old,percent);
                 percent_old = percent_new;
-
-                // if (fabsf (percent_new)<=0.06)
-                //   percent_new = 0;
-                //printf("\np:%f\n",percent_new);
-                if (desired_current <= 0) //output the pwm command
+                if (desired_current <= 0)
                         KneeExtension (-percent_new);
                 else if (desired_current >0)
                         KneeFlexion (percent_new);
-
                 break;
-
         }
-//  printf("tau:%f,",impedance);
-//    return state;
 
         knee_st_impedance.st = state;
         knee_st_impedance.impedance = impedance;
         knee_st_impedance.percent_new = percent_new;
         return knee_st_impedance;
-
-
 }
