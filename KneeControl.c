@@ -44,7 +44,7 @@
 
 /*
 
-   Old values preserved here.
+  Old values preserved here.
 
  #define ES_SWF_switching_heeloff 950   //State 0 to State 0 (Early_stance to Swing_flexion)
  #define SWF_SWE_switchin_angle 40  //State 2 to State 3 (Swing_flexion to Swing_extension)
