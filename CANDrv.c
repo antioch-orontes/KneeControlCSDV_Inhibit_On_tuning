@@ -47,10 +47,9 @@
  * The device used is dsPIC33FJ256GP710 controller
  *************************************************************************************************/
 
-
 #include "Externals.h"
 
-void ecan1WriteRxAcptFilter(int n, long identifier, unsigned int exide, unsigned int bufPnt,unsigned int maskSel);
+void ecan1WriteRxAcptFilter(int n, long identifier, unsigned int exide, unsigned int bufPnt, unsigned int maskSel);
 void ecan1WriteRxAcptMask(int m, long identifier, unsigned int mide, unsigned int exide);
 void ecan1WriteTxMsgBufId(unsigned int buf, long txIdentifier, unsigned int ide, unsigned int remoteTransmit);
 void ecan1WriteTxMsgBufData(unsigned int buf, unsigned int dataLength, unsigned int data1, unsigned int data2, unsigned int data3, unsigned int data4);
@@ -78,50 +77,47 @@ void ecan1DisableRXFilter(int n);
 
  */
 
-void ecan1WriteRxAcptFilter(int n, long identifier, unsigned int exide, unsigned int bufPnt,unsigned int maskSel) {
+void ecan1WriteRxAcptFilter(int n, long identifier, unsigned int exide, unsigned int bufPnt, unsigned int maskSel)
+{
 
-								unsigned long sid10_0=0, eid15_0=0, eid17_16=0;
-								unsigned int *sidRegAddr,*bufPntRegAddr,*maskSelRegAddr, *fltEnRegAddr;
+	unsigned long sid10_0 = 0, eid15_0 = 0, eid17_16 = 0;
+	unsigned int *sidRegAddr, *bufPntRegAddr, *maskSelRegAddr, *fltEnRegAddr;
 
+	C1CTRL1bits.WIN = 1;
 
-								C1CTRL1bits.WIN=1;
+	// Obtain the Address of CiRXFnSID, CiBUFPNTn, CiFMSKSELn and CiFEN register for a given filter number "n"
+	sidRegAddr = (unsigned int *)(&C1RXF0SID + (n << 1));
+	bufPntRegAddr = (unsigned int *)(&C1BUFPNT1 + (n >> 2));
+	maskSelRegAddr = (unsigned int *)(&C1FMSKSEL1 + (n >> 3));
+	fltEnRegAddr = (unsigned int *)(&C1FEN1);
 
-								// Obtain the Address of CiRXFnSID, CiBUFPNTn, CiFMSKSELn and CiFEN register for a given filter number "n"
-								sidRegAddr = (unsigned int *)(&C1RXF0SID + (n << 1));
-								bufPntRegAddr = (unsigned int *)(&C1BUFPNT1 + (n >> 2));
-								maskSelRegAddr = (unsigned int *)(&C1FMSKSEL1 + (n >> 3));
-								fltEnRegAddr = (unsigned int *)(&C1FEN1);
+	// Bit-filed manupulation to write to Filter identifier register
+	if (exide == 1)
+	{ // Filter Extended Identifier
+		eid15_0 = (identifier & 0xFFFF);
+		eid17_16 = (identifier >> 16) & 0x3;
+		sid10_0 = (identifier >> 18) & 0x7FF;
 
+		*sidRegAddr = (((sid10_0) << 5) + 0x8) + eid17_16; // Write to CiRXFnSID Register
+		*(sidRegAddr + 1) = eid15_0;					   // Write to CiRXFnEID Register
+	}
+	else
+	{ // Filter Standard Identifier
+		sid10_0 = (identifier & 0x7FF);
+		*sidRegAddr = (sid10_0) << 5; // Write to CiRXFnSID Register
+		*(sidRegAddr + 1) = 0;		  // Write to CiRXFnEID Register
+	}
 
-								// Bit-filed manupulation to write to Filter identifier register
-								if(exide==1) { // Filter Extended Identifier
-																eid15_0 = (identifier & 0xFFFF);
-																eid17_16= (identifier>>16) & 0x3;
-																sid10_0 = (identifier>>18) & 0x7FF;
+	*bufPntRegAddr = (*bufPntRegAddr) & (0xFFFF - (0xF << (4 * (n & 3)))); // clear nibble
+	*bufPntRegAddr = ((bufPnt << (4 * (n & 3))) | (*bufPntRegAddr));	   // Write to C1BUFPNTn Register
 
-																*sidRegAddr=(((sid10_0)<<5) + 0x8) + eid17_16; // Write to CiRXFnSID Register
-																*(sidRegAddr+1)= eid15_0; // Write to CiRXFnEID Register
+	*maskSelRegAddr = (*maskSelRegAddr) & (0xFFFF - (0x3 << ((n & 7) * 2))); // clear 2 bits
+	*maskSelRegAddr = ((maskSel << (2 * (n & 7))) | (*maskSelRegAddr));		 // Write to C1FMSKSELn Register
 
-								}else{ // Filter Standard Identifier
-																sid10_0 = (identifier & 0x7FF);
-																*sidRegAddr=(sid10_0)<<5; // Write to CiRXFnSID Register
-																*(sidRegAddr+1)=0; // Write to CiRXFnEID Register
-								}
+	*fltEnRegAddr = ((0x1 << n) | (*fltEnRegAddr)); // Write to C1FEN1 Register
 
-
-								*bufPntRegAddr = (*bufPntRegAddr) & (0xFFFF - (0xF << (4 *(n & 3)))); // clear nibble
-								*bufPntRegAddr = ((bufPnt << (4 *(n & 3))) | (*bufPntRegAddr));  // Write to C1BUFPNTn Register
-
-								*maskSelRegAddr = (*maskSelRegAddr) & (0xFFFF - (0x3 << ((n & 7) * 2))); // clear 2 bits
-								*maskSelRegAddr = ((maskSel << (2 * (n & 7))) | (*maskSelRegAddr)); // Write to C1FMSKSELn Register
-
-								*fltEnRegAddr = ((0x1 << n) | (*fltEnRegAddr)); // Write to C1FEN1 Register
-
-								C1CTRL1bits.WIN=0;
-
-
+	C1CTRL1bits.WIN = 0;
 }
-
 
 /*
    This function configures Acceptance Filter Mask "m"
@@ -143,47 +139,43 @@ void ecan1WriteRxAcptFilter(int n, long identifier, unsigned int exide, unsigned
 
  */
 
-void ecan1WriteRxAcptMask(int m, long identifier, unsigned int mide, unsigned int exide){
+void ecan1WriteRxAcptMask(int m, long identifier, unsigned int mide, unsigned int exide)
+{
 
-								unsigned long sid10_0=0, eid15_0=0, eid17_16=0;
-								unsigned int *maskRegAddr;
+	unsigned long sid10_0 = 0, eid15_0 = 0, eid17_16 = 0;
+	unsigned int *maskRegAddr;
 
+	C1CTRL1bits.WIN = 1;
 
-								C1CTRL1bits.WIN=1;
+	// Obtain the Address of CiRXMmSID register for given Mask number "m"
+	maskRegAddr = (unsigned int *)(&C1RXM0SID + (m << 1));
 
-								// Obtain the Address of CiRXMmSID register for given Mask number "m"
-								maskRegAddr = (unsigned int *)(&C1RXM0SID + (m << 1));
+	// Bit-filed manupulation to write to Filter Mask register
+	if (exide == 1)
+	{ // Filter Extended Identifier
+		eid15_0 = (identifier & 0xFFFF);
+		eid17_16 = (identifier >> 16) & 0x3;
+		sid10_0 = (identifier >> 18) & 0x7FF;
 
-								// Bit-filed manupulation to write to Filter Mask register
-								if(exide==1)
-								{ // Filter Extended Identifier
-																eid15_0 = (identifier & 0xFFFF);
-																eid17_16= (identifier>>16) & 0x3;
-																sid10_0 = (identifier>>18) & 0x7FF;
+		if (mide == 1)
+			*maskRegAddr = ((sid10_0) << 5) + 0x0008 + eid17_16; // Write to CiRXMnSID Register
+		else
+			*maskRegAddr = ((sid10_0) << 5) + eid17_16; // Write to CiRXMnSID Register
+		*(maskRegAddr + 1) = eid15_0;					// Write to CiRXMnEID Register
+	}
+	else
+	{ // Filter Standard Identifier
+		sid10_0 = (identifier & 0x7FF);
+		if (mide == 1)
+			*maskRegAddr = ((sid10_0) << 5) + 0x0008; // Write to CiRXMnSID Register
+		else
+			*maskRegAddr = (sid10_0) << 5; // Write to CiRXMnSID Register
 
-																if(mide==1)
-																								*maskRegAddr=((sid10_0)<<5) + 0x0008 + eid17_16; // Write to CiRXMnSID Register
-																else
-																								*maskRegAddr=((sid10_0)<<5) + eid17_16; // Write to CiRXMnSID Register
-																*(maskRegAddr+1)= eid15_0; // Write to CiRXMnEID Register
+		*(maskRegAddr + 1) = 0; // Write to CiRXMnEID Register
+	}
 
-								}
-								else
-								{ // Filter Standard Identifier
-																sid10_0 = (identifier & 0x7FF);
-																if(mide==1)
-																								*maskRegAddr=((sid10_0)<<5) + 0x0008; // Write to CiRXMnSID Register
-																else
-																								*maskRegAddr=(sid10_0)<<5; // Write to CiRXMnSID Register
-
-																*(maskRegAddr+1)=0; // Write to CiRXMnEID Register
-								}
-
-
-								C1CTRL1bits.WIN=0;
-
+	C1CTRL1bits.WIN = 0;
 }
-
 
 /* ECAN Transmit Message Buffer Configuration
 
@@ -271,48 +263,45 @@ void ecan1WriteRxAcptMask(int m, long identifier, unsigned int mide, unsigned in
 void ecan1WriteTxMsgBufId(unsigned int buf, long txIdentifier, unsigned int ide, unsigned int remoteTransmit)
 {
 
-								unsigned long word0 = 0, word1 = 0, word2 = 0;
-								unsigned long sid10_0 = 0, eid5_0 = 0, eid17_6 = 0;
+	unsigned long word0 = 0, word1 = 0, word2 = 0;
+	unsigned long sid10_0 = 0, eid5_0 = 0, eid17_6 = 0;
 
+	if (ide)
+	{
+		eid5_0 = (txIdentifier & 0x3F);
+		eid17_6 = (txIdentifier >> 6) & 0xFFF;
+		sid10_0 = (txIdentifier >> 18) & 0x7FF;
+		word1 = eid17_6;
+	}
+	else
+	{
+		sid10_0 = (txIdentifier & 0x7FF);
+	}
 
-								if (ide)
-								{
-																eid5_0 = (txIdentifier & 0x3F);
-																eid17_6 = (txIdentifier >> 6) & 0xFFF;
-																sid10_0 = (txIdentifier >> 18) & 0x7FF;
-																word1 = eid17_6;
-								}
-								else
-								{
-																sid10_0 = (txIdentifier & 0x7FF);
-								}
+	if (remoteTransmit == 1)
+	{ // Transmit Remote Frame
 
+		word0 = ((sid10_0 << 2) | ide | 0x2);
+		word2 = ((eid5_0 << 10) | 0x0200);
+	}
 
-								if (remoteTransmit == 1)
-								{ // Transmit Remote Frame
+	else
+	{
 
-																word0 = ((sid10_0 << 2) | ide | 0x2);
-																word2 = ((eid5_0 << 10) | 0x0200);
-								}
+		word0 = ((sid10_0 << 2) | ide);
+		word2 = (eid5_0 << 10);
+	}
 
-								else
-								{
+	// Obtain the Address of Transmit Buffer in DMA RAM for a given Transmit Buffer number
 
-																word0 = ((sid10_0 << 2) | ide);
-																word2 = (eid5_0 << 10);
-								}
+	if (ide)
+		ecan1msgBuf[buf][0] = (word0 | 0x0002);
+	else
+		ecan1msgBuf[buf][0] = word0;
 
-								// Obtain the Address of Transmit Buffer in DMA RAM for a given Transmit Buffer number
-
-								if (ide)
-																ecan1msgBuf[buf][0] = (word0 | 0x0002);
-								else
-																ecan1msgBuf[buf][0] = word0;
-
-								ecan1msgBuf[buf][1] = word1;
-								ecan1msgBuf[buf][2] = word2;
+	ecan1msgBuf[buf][1] = word1;
+	ecan1msgBuf[buf][2] = word2;
 }
-
 
 /* ECAN Transmit Data
 
@@ -345,10 +334,9 @@ void ecan1WriteTxMsgBufId(unsigned int buf, long txIdentifier, unsigned int ide,
 
 void ecan1DisableRXFilter(int n)
 {
-								unsigned int *fltEnRegAddr;
-								C1CTRL1bits.WIN=1;
-								fltEnRegAddr = (unsigned int *)(&C1FEN1);
-								*fltEnRegAddr = (*fltEnRegAddr) & (0xFFFF - (0x1 << n));
-								C1CTRL1bits.WIN=0;
-
+	unsigned int *fltEnRegAddr;
+	C1CTRL1bits.WIN = 1;
+	fltEnRegAddr = (unsigned int *)(&C1FEN1);
+	*fltEnRegAddr = (*fltEnRegAddr) & (0xFFFF - (0x1 << n));
+	C1CTRL1bits.WIN = 0;
 }

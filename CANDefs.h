@@ -11,7 +11,7 @@
 #define _CAN_DEFS_H
 
 #ifndef uint16
-	#define uint16 unsigned int
+#define uint16 unsigned int
 #endif
 
 //The Standard Identifier (SID) Field contains 11 bits and makes up the entire Arbitration Field
@@ -23,11 +23,11 @@
 #define ACKLSB 0x0001
 
 //Priority identifier
-#define PRIORITY_HI 0x0 //00  // high priority
+#define PRIORITY_HI 0x0    //00  // high priority
 #define PRIORITY_MED 0x200 //01 // medium priority
 #define PRIORITY_LOW 0x400 //10 // low priority
 //Mode Identifier
-#define MID_FROM 0 //the NID contains the value of the node that sent the message.
+#define MID_FROM 0   //the NID contains the value of the node that sent the message.
 #define MID_TO 0x100 //the NID contains the value of the node that the message is destined
 
 ////transmit request register
@@ -50,6 +50,5 @@
 #define NOTUSEDBUF6TXBusy C1TR67CONbits.TXREQ6
 #define NOTUSEDBUF7 7
 #define NOTUSEDBUF7TXBusy C1TR67CONbits.TXREQ7
-
 
 #endif

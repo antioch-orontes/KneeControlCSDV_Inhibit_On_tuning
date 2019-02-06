@@ -7,7 +7,6 @@
 
 *******************************************************/
 
-
 #include "Externals.h"
 
 extern void ecan1WriteTxMsgBufId(unsigned int buf, long txIdentifier, unsigned int ide, unsigned int remoteTransmit);
@@ -23,25 +22,25 @@ void CANSendAll(float flt_data_1, float flt_data_2, float flt_data_3, int int_da
 
         //ang_velocity=-11.11;
 
+        data.u16[0] = (UINT16)((flt_data_1 * 10) + (65535 / 2)); //range of data able to handle, -3276.7 to 3276.7
+        data.u16[1] = (UINT16)((flt_data_2 * 10) + (65535 / 2)); //range of data able to handle, -3276.7 to 3276.7
+        data.u16[2] = (UINT16)((flt_data_3 * 10) + (65535 / 2)); //range of data able to handle, 0 to 65535
+        data.u16[3] = int_data_2;                                //range of data able to handle, 0 to 65535
 
-        data.u16[0] =(UINT16)((flt_data_1*10)+(65535/2)); //range of data able to handle, -3276.7 to 3276.7
-        data.u16[1] =(UINT16)((flt_data_2*10)+(65535/2)); //range of data able to handle, -3276.7 to 3276.7
-        data.u16[2] = (UINT16)((flt_data_3*10)+(65535/2));                       //range of data able to handle, 0 to 65535
-        data.u16[3] = int_data_2;                       //range of data able to handle, 0 to 65535
-
-//    data.u16[0] =1;
-//    data.u16[1] = 2000;
-//    data.u32[1] = 1;
+        //    data.u16[0] =1;
+        //    data.u16[1] = 2000;
+        //    data.u32[1] = 1;
         //Try to send the message 5 times then give up.
         //The return value only indicates that the message was placed in the transmit queue, not that it was delivered.
         //If there are no other devices on the CAN bus the transmit buffer will fill up and the sending function will return 1;
         //Testing the return value is optional (in general I don't bother).
 
         retryCount = 0;
-        do {
+        do
+        {
                 retVal = CanSend0x20(&data);
                 retryCount++;
-        } while((retVal == 0)&&(retryCount < 5));
+        } while ((retVal == 0) && (retryCount < 5));
 }
 
 UINT8 CanSend0x20(CAN_DATA_UNION *pData)

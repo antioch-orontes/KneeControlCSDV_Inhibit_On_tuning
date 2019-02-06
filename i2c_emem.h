@@ -37,64 +37,63 @@
    (INCLUDING BUT NOT LIMITED TO ANY DEFENSE THEREOF), OR OTHER SIMILAR COSTS.
 *******************************************************************************/
 #ifndef __I2CEMEM_H__
-    #define __I2CEMEM_H__
+#define __I2CEMEM_H__
 
-    #include <stdint.h>
+#include <stdint.h>
 
-    #ifdef __cplusplus  // Provide C++ Compatability
+#ifdef __cplusplus // Provide C++ Compatability
 extern "C"
 {
-        #endif
+#endif
 
-// *****************************************************************************
-// *****************************************************************************
-// Section: Constants
-// *****************************************************************************
-// *****************************************************************************
-        #define MAX_RETRY   3
-        #define ONE_BYTE    1
-        #define TWO_BYTE    2
+        // *****************************************************************************
+        // *****************************************************************************
+        // Section: Constants
+        // *****************************************************************************
+        // *****************************************************************************
+#define MAX_RETRY 3
+#define ONE_BYTE 1
+#define TWO_BYTE 2
 
-// EEPROM ADDRESS SIZE
-        #define ADDRWIDTH   ONE_BYTE
+        // EEPROM ADDRESS SIZE
+#define ADDRWIDTH ONE_BYTE
 
-// EEPROM DRIVER COMMAND DEFINITION
-        #define I2C_IDLE    0
-        #define I2C_WRITE   1
-        #define I2C_READ    2
-        #define I2C_ERR     0xFFFF
+        // EEPROM DRIVER COMMAND DEFINITION
+#define I2C_IDLE 0
+#define I2C_WRITE 1
+#define I2C_READ 2
+#define I2C_ERR 0xFFFF
 
-// EEPROM DATA OBJECT
-typedef struct
-{
-        uint16_t    *buff;
-        uint16_t n;
-        uint16_t addr;
-        uint16_t csel;
-} I2CEMEM_DATA;
+        // EEPROM DATA OBJECT
+        typedef struct
+        {
+                uint16_t *buff;
+                uint16_t n;
+                uint16_t addr;
+                uint16_t csel;
+        } I2CEMEM_DATA;
 
-// EEPROM DRIVER OBJECT
-typedef struct
-{
-        uint16_t cmd;
-        I2CEMEM_DATA    *oData;
-        void ( *init )( void * );
-        void ( *tick )( void * );
-}
-I2CEMEM_DRV;
+        // EEPROM DRIVER OBJECT
+        typedef struct
+        {
+                uint16_t cmd;
+                I2CEMEM_DATA *oData;
+                void (*init)(void *);
+                void (*tick)(void *);
+        } I2CEMEM_DRV;
 
-        #define I2CSEMEM_DRV_DEFAULTS                                                                      \
-        {                                                                                                  \
-                0, ( I2CEMEM_DATA * ) 0, ( void (*)( void * ) )I2CEMEMinit, ( void (*)( void * ) )I2CEMEMdrv \
+#define I2CSEMEM_DRV_DEFAULTS                                                                     \
+        {                                                                                         \
+                0, (I2CEMEM_DATA *)0, (void (*)(void *))I2CEMEMinit, (void (*)(void *))I2CEMEMdrv \
         }
 
-void I2CEMEMinit( I2CEMEM_DRV * );
-void I2CEMEMdrv( I2CEMEM_DRV * );
+        void I2CEMEMinit(I2CEMEM_DRV *);
+        void I2CEMEMdrv(I2CEMEM_DRV *);
 
-        #ifdef __cplusplus  // Provide C++ Compatibility
+#ifdef __cplusplus // Provide C++ Compatibility
 }
 
-    #endif
+#endif
 #endif
 
 /*******************************************************************************

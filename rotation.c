@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include "rotation.h"
 
-void DF (float percent)
+void DF(float percent)
 {
         uint16_t duty_cycle = 0;
         duty_cycle = percent * 8190;
@@ -10,7 +10,7 @@ void DF (float percent)
         P1DC3 = duty_cycle;
 }
 
-void PF (float percent)
+void PF(float percent)
 {
         uint16_t duty_cycle = 0;
         duty_cycle = percent * 8190;
@@ -18,14 +18,14 @@ void PF (float percent)
         P1DC3 = duty_cycle;
 }
 
-void PwmDutyCycle (float percent)
+void PwmDutyCycle(float percent)
 {
         uint16_t duty_cycle = 0;
         duty_cycle = percent * 8190;
         P1DC3 = duty_cycle;
 }
 
-void Stop ()
+void Stop()
 {
         P1DC3 = 0;
 }

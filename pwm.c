@@ -1,6 +1,6 @@
 #include <xc.h>
 #include "pwm.h"
-#include <stdint.h>        /* Includes uint16_t definition                    */
+#include <stdint.h> /* Includes uint16_t definition                    */
 
 /* Sets up the PWM module for complementary mode operation.
  * PWM1 H3 output is configured to produce a 10kHz PWM signal.
@@ -62,15 +62,15 @@ void init_PWM()
 void init_DIR()
 {
         //Configure Pin 14 RB5 as open drain output for Direction
-        ODCBbits.ODCB5 = 1; // Turn on open drain feature
-        LATBbits.LATB5 = 0; // Set value to 0
+        ODCBbits.ODCB5 = 1;   // Turn on open drain feature
+        LATBbits.LATB5 = 0;   // Set value to 0
         TRISBbits.TRISB5 = 1; // Output 0
 
         //Configure Pin 21 RB10 as open drain output for PWM
         ODCBbits.ODCB10 = 1;
 }
 
-void DF (float percent)
+void DF(float percent)
 {
         uint16_t duty_cycle = 0;
         duty_cycle = percent * 8190;
@@ -78,7 +78,7 @@ void DF (float percent)
         P1DC3 = duty_cycle;
 }
 
-void PF (float percent)
+void PF(float percent)
 {
         uint16_t duty_cycle = 0;
         duty_cycle = percent * 8190;
@@ -86,38 +86,35 @@ void PF (float percent)
         P1DC3 = duty_cycle;
 }
 
-void KneeFlexion (float percent)
+void KneeFlexion(float percent)
 {
-        DF (percent);
+        DF(percent);
 }
 
-void KneeExtension (float percent)
+void KneeExtension(float percent)
 {
-        PF (percent);
+        PF(percent);
 }
 
-void PwmDutyCycle (float percent)
+void PwmDutyCycle(float percent)
 {
         uint16_t duty_cycle = 0;
         duty_cycle = percent * 8190;
         P1DC3 = duty_cycle;
 }
 
-void Stop ()
+void Stop()
 {
         P1DC3 = 0;
 }
 
 void Init_Inhibit()
 {
-        ODCAbits.ODCA1 = 1; // Turn on open drain feature
+        ODCAbits.ODCA1 = 1;   // Turn on open drain feature
         TRISAbits.TRISA1 = 1; // Pull up to hv High by setting B5 as input, noting this is the function of Open-drain
-
-
 }
 
 void Open_Inhibit()
 {
         TRISAbits.TRISA1 = 0; //set inhibit pin as low to stop inhibit
-
 }

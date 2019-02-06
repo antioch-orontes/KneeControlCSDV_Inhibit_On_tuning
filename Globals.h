@@ -15,8 +15,7 @@
 #include "CANStructs.h"
 #include "CanDefs.h"
 
-
-ECAN1MSGBUF ecan1msgBuf __attribute__((space(dma),aligned(ECAN1_MSG_BUF_LENGTH*16)));
+ECAN1MSGBUF ecan1msgBuf __attribute__((space(dma), aligned(ECAN1_MSG_BUF_LENGTH * 16)));
 UINT16 gTimers[MAXTIMERS];
 UINT32 T3ISRCount = 0;
 #endif

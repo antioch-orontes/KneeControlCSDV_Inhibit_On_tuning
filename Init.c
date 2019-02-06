@@ -11,7 +11,6 @@
 
 #include "Externals.h"
 
-
 void InitOsc(void);
 void InitDma3(void);
 void InitDma2(void);
@@ -32,7 +31,7 @@ void InitDma3(void)
         /* Set Number of DMA Transfer per ECAN message to 8 words */
         DMA3CNT = 7;
         /* Peripheral Address: ECAN1 Transmit Register */
-        DMA3PAD = (int) &C1TXD;
+        DMA3PAD = (int)&C1TXD;
         /* Start Address Offset for ECAN1 Message Buffer 0x0000 */
         DMA3STA = __builtin_dmaoffset(ecan1msgBuf);
         /* Channel Enable: Enable*/
@@ -50,7 +49,6 @@ void InitDma2(void)
         DMA2REQ = 0x0022; /* ECAN 1 Receive */
         DMA2STA = __builtin_dmaoffset(ecan1msgBuf);
         DMA2CONbits.CHEN = 1;
-
 }
 
 void InitCAN1Clock(void)
@@ -157,7 +155,8 @@ void InitCAN1(void)
         ecan1WriteRxAcptFilter(0, 0x00000024, 0, 15, 0);
 
         /* Enter Normal Mode */
-        do {
+        do
+        {
                 C1CTRL1bits.REQOP = 0;
         } while (C1CTRL1bits.OPMODE != 0);
 
@@ -182,7 +181,6 @@ void InitCAN1(void)
         C1TR67CONbits.TX6PRI = 0b11; /* Message Buffer 6 Priority Level */
         C1TR67CONbits.TX7PRI = 0b11; /* Message Buffer 7 Priority Level */
 }
-
 
 void InitOsc(void)
 {

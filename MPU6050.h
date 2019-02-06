@@ -21,19 +21,19 @@
    THE SOFTWARE.
    ===============================================
  */
-#include <stdint.h>        /* Includes uint16_t definition                    */
+#include <stdint.h> /* Includes uint16_t definition                    */
 
 //#define MPU6050_ADDRESS 0b11010010 // Address with end write bit
 
-#define MPU6050_ADDRESS     0b1101000 // address pin low (GND), default for InvenSense evaluation board 7 bit address
+#define MPU6050_ADDRESS 0b1101000 // address pin low (GND), default for InvenSense evaluation board 7 bit address
 
-#define MPU6050_RA_XG_OFFS_TC 0x00 //[7] PWR_MODE, [6:1] XG_OFFS_TC, [0] OTP_BNK_VLD
-#define MPU6050_RA_YG_OFFS_TC 0x01 //[7] PWR_MODE, [6:1] YG_OFFS_TC, [0] OTP_BNK_VLD
-#define MPU6050_RA_ZG_OFFS_TC 0x02 //[7] PWR_MODE, [6:1] ZG_OFFS_TC, [0] OTP_BNK_VLD
+#define MPU6050_RA_XG_OFFS_TC 0x00  //[7] PWR_MODE, [6:1] XG_OFFS_TC, [0] OTP_BNK_VLD
+#define MPU6050_RA_YG_OFFS_TC 0x01  //[7] PWR_MODE, [6:1] YG_OFFS_TC, [0] OTP_BNK_VLD
+#define MPU6050_RA_ZG_OFFS_TC 0x02  //[7] PWR_MODE, [6:1] ZG_OFFS_TC, [0] OTP_BNK_VLD
 #define MPU6050_RA_X_FINE_GAIN 0x03 //[7:0] X_FINE_GAIN
 #define MPU6050_RA_Y_FINE_GAIN 0x04 //[7:0] Y_FINE_GAIN
 #define MPU6050_RA_Z_FINE_GAIN 0x05 //[7:0] Z_FINE_GAIN
-#define MPU6050_RA_XA_OFFS_H 0x06 //[15:0] XA_OFFS
+#define MPU6050_RA_XA_OFFS_H 0x06   //[15:0] XA_OFFS
 #define MPU6050_RA_XA_OFFS_L_TC 0x07
 #define MPU6050_RA_YA_OFFS_H 0x08 //[15:0] YA_OFFS
 #define MPU6050_RA_YA_OFFS_L_TC 0x09
@@ -138,8 +138,6 @@
 #define MPU6050_RA_FIFO_R_W 0x74
 #define MPU6050_RA_WHO_AM_I 0x75
 
-
-
 // This struct hold the imu data including acceleration, gyro, temperature
 struct imu_data
 {
@@ -160,13 +158,12 @@ struct imu_angle
 };
 
 // Instantiate Drive and Data objects
-void initImu ( void );
-struct imu_data getImuData( void );
-int16_t getAccelX( void );
-void printImuData( struct imu_data imuData );
-struct imu_data calibrateImu( void );
-struct imu_angle processImuRaw ( struct imu_data imuMyData, struct imu_data imuBase, struct imu_angle last_angle, float dt_us );
-
+void initImu(void);
+struct imu_data getImuData(void);
+int16_t getAccelX(void);
+void printImuData(struct imu_data imuData);
+struct imu_data calibrateImu(void);
+struct imu_angle processImuRaw(struct imu_data imuMyData, struct imu_data imuBase, struct imu_angle last_angle, float dt_us);
 
 /*
  * void Get_Accel_Values();

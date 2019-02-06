@@ -8,16 +8,14 @@
 
 *******************************************************/
 
-
 #include "Externals.h"
 
-extern void CanSend(uint16 ID, uint16 PID, uint16* pd);
+extern void CanSend(uint16 ID, uint16 PID, uint16 *pd);
 extern UINT8 CanSend0x25(CAN_DATA_UNION *pData);
 
 void CanParseBuf(UINT16 buf);
 UINT16 CanParse(void);
 void Parse0x24(unsigned int buf);
-
 
 #define C1RX1START 8 //first rx buf
 #define C1RX1END 15  //last rx buf
@@ -71,7 +69,7 @@ void CanParseBuf(UINT16 buf)
 {
         UINT16 id;
         id = ecan1msgBuf[buf][0] >> 2;
-        switch(id)
+        switch (id)
         {
         case 0x24:
                 Parse0x24(buf);
@@ -88,5 +86,4 @@ void Parse0x24(UINT16 buf)
 
         //echo this back in MID 0x25
         CanSend0x25(pData);
-
 }

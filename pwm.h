@@ -1,10 +1,10 @@
 void init_PWM();
 void init_DIR();
-void DF (float percent);
-void PF (float percent);
-void KneeFlexion (float percent);
-void KneeExtension (float percent);
-void PwmDutyCycle (float percent);
-void Stop ();
+void DF(float percent);
+void PF(float percent);
+void KneeFlexion(float percent);
+void KneeExtension(float percent);
+void PwmDutyCycle(float percent);
+void Stop();
 void Init_Inhibit();
 void Open_Inhibit();

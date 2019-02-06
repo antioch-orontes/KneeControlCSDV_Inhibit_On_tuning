@@ -66,7 +66,7 @@ extern I2CEMEM_DRV i2cmem;
  *
  * Overview:        This serves the I2C Master Interrupt Service Routine.
  *****************************************************************************/
-void __attribute__ ( (interrupt, no_auto_psv) ) _MI2C1Interrupt( void )
+void __attribute__((interrupt, no_auto_psv)) _MI2C1Interrupt(void)
 {
         jDone = 1;
         IFS1bits.MI2C1IF = 0; //Clear the DMA0 Interrupt Flag;
@@ -85,7 +85,7 @@ void __attribute__ ( (interrupt, no_auto_psv) ) _MI2C1Interrupt( void )
  *
  * Overview:        This serves the I2C Slave interrupt.
  *****************************************************************************/
-void __attribute__ ( (interrupt, no_auto_psv) ) _SI2C1Interrupt( void )
+void __attribute__((interrupt, no_auto_psv)) _SI2C1Interrupt(void)
 {
         IFS1bits.SI2C1IF = 0; //Clear the DMA0 Interrupt Flag
 }
@@ -106,7 +106,7 @@ void __attribute__ ( (interrupt, no_auto_psv) ) _SI2C1Interrupt( void )
  *                  master and use 8-bit mode for communication
  *                  with the serial EEPROM.
  *****************************************************************************/
-void I2CEMEMinit( I2CEMEM_DRV *i2cMem )
+void I2CEMEMinit(I2CEMEM_DRV *i2cMem)
 {
         i2cMem->cmd = 0;
         i2cMem->oData = 0;
@@ -149,7 +149,7 @@ void I2CEMEMinit( I2CEMEM_DRV *i2cMem )
  *                  reading/writing from/to the slave device which is in this
  *                  case the serial EEPROM
  *****************************************************************************/
-void I2CEMEMdrv( I2CEMEM_DRV *i2cMem )
+void I2CEMEMdrv(I2CEMEM_DRV *i2cMem)
 {
         static int16_t state = 0;
 
@@ -157,11 +157,11 @@ void I2CEMEMdrv( I2CEMEM_DRV *i2cMem )
 
         static int16_t rtrycntr = 0;
 
-        switch( state )
+        switch (state)
         {
         //printf("\n case is %d",state);
         case 0:
-                if( (i2cMem->cmd == I2C_WRITE) || (i2cMem->cmd == I2C_READ) )
+                if ((i2cMem->cmd == I2C_WRITE) || (i2cMem->cmd == I2C_READ))
                 {
                         state = 1;
                 }
@@ -179,7 +179,7 @@ void I2CEMEMdrv( I2CEMEM_DRV *i2cMem )
 
         case 2:
                 // Start Byte with device select id
-                if( jDone == 1 )
+                if (jDone == 1)
                 {
                         jDone = 0;
                         state = state + 1;
@@ -187,7 +187,7 @@ void I2CEMEMdrv( I2CEMEM_DRV *i2cMem )
                         //    I2C1TRN=(0x00A0)|(((i2cMem->oData->csel)&0x7)<<1);
                         //I2C1TRN = 0x00A0;
                         // Modify (send I2C address + a write bit)
-                        I2C1TRN = (i2cMem->oData->csel)<<1;
+                        I2C1TRN = (i2cMem->oData->csel) << 1;
                 }
 
                 break;
@@ -195,13 +195,13 @@ void I2CEMEMdrv( I2CEMEM_DRV *i2cMem )
         case 3:
 
                 // Send address byte 1, if ack is received. Else Retry
-                if( jDone == 1 )
+                if (jDone == 1)
                 {
                         jDone = 0;
 
-                        if( I2C1STATbits.ACKSTAT == 1 )
-                        {           // Ack Not received, Retry
-                                if( rtrycntr < MAX_RETRY )
+                        if (I2C1STATbits.ACKSTAT == 1)
+                        { // Ack Not received, Retry
+                                if (rtrycntr < MAX_RETRY)
                                 {
                                         state = 18;
                                 }
@@ -214,14 +214,14 @@ void I2CEMEMdrv( I2CEMEM_DRV *i2cMem )
                         {
                                 rtrycntr = 0;
 
-                    #if ADDRWIDTH == TWO_BYTE
-                                I2C1TRN = ( (i2cMem->oData->addr) & 0xFF00 ) >> 8;
+#if ADDRWIDTH == TWO_BYTE
+                                I2C1TRN = ((i2cMem->oData->addr) & 0xFF00) >> 8;
                                 state = state + 1;
-                    #endif
-                    #if ADDRWIDTH == ONE_BYTE
-                                I2C1TRN = ( (i2cMem->oData->addr) ); //register address to be read
+#endif
+#if ADDRWIDTH == ONE_BYTE
+                                I2C1TRN = ((i2cMem->oData->addr)); //register address to be read
                                 state = state + 2;
-                    #endif
+#endif
                         }
                 }
 
@@ -229,19 +229,19 @@ void I2CEMEMdrv( I2CEMEM_DRV *i2cMem )
 
         case 4:
                 // Send address byte 2, if ack is received. Else Flag error and exit
-                if( jDone == 1 )
+                if (jDone == 1)
                 {
                         jDone = 0;
 
-                        if( I2C1STATbits.ACKSTAT == 1 )
-                        {           // Ack Not received, Flag error and exit
+                        if (I2C1STATbits.ACKSTAT == 1)
+                        { // Ack Not received, Flag error and exit
                                 state = 16;
                         }
                         else
                         {
-                    #if ADDRWIDTH == TWO_BYTE
-                                I2C1TRN = ( (i2cMem->oData->addr) & 0x00FF );
-                    #endif
+#if ADDRWIDTH == TWO_BYTE
+                                I2C1TRN = ((i2cMem->oData->addr) & 0x00FF);
+#endif
                                 state = state + 1;
                         }
                 }
@@ -250,22 +250,22 @@ void I2CEMEMdrv( I2CEMEM_DRV *i2cMem )
 
         case 5:
                 // Read or Write
-                if( jDone == 1 )
+                if (jDone == 1)
                 {
                         jDone = 0;
 
-                        if( I2C1STATbits.ACKSTAT == 1 )
-                        {           // Ack Not received, Flag error and exit
+                        if (I2C1STATbits.ACKSTAT == 1)
+                        { // Ack Not received, Flag error and exit
                                 state = 16;
                         }
                         else
                         {
-                                if( i2cMem->cmd == I2C_WRITE )
+                                if (i2cMem->cmd == I2C_WRITE)
                                 {
                                         state = state + 1;
                                 }
 
-                                if( i2cMem->cmd == I2C_READ )
+                                if (i2cMem->cmd == I2C_READ)
                                 {
                                         state = 8;
                                 }
@@ -279,27 +279,28 @@ void I2CEMEMdrv( I2CEMEM_DRV *i2cMem )
         /*==================================*/
         case 6:
                 // Send data
-                I2C1TRN = *( i2cMem->oData->buff + cntr );
+                I2C1TRN = *(i2cMem->oData->buff + cntr);
                 state = state + 1;
                 cntr = cntr + 1;
                 break;
 
         case 7:
                 // Look for end of data or no Ack
-                if( jDone == 1 )
+                if (jDone == 1)
                 {
                         jDone = 0;
                         state = state - 1;
 
-                        if( I2C1STATbits.ACKSTAT == 1 )
-                        {           // Ack Not received, Flag error and exit
+                        if (I2C1STATbits.ACKSTAT == 1)
+                        { // Ack Not received, Flag error and exit
                                 state = 16;
                         }
                         else
                         {
-                                if( cntr == i2cMem->oData->n )
-                                {                                   state=14;// Close the Frame without ACK polling
-                                                                    //state = 20; // Go to ACK polling to wait for write to complete
+                                if (cntr == i2cMem->oData->n)
+                                {
+                                        state = 14; // Close the Frame without ACK polling
+                                                    //state = 20; // Go to ACK polling to wait for write to complete
                                 }
                         }
                 }
@@ -317,26 +318,26 @@ void I2CEMEMdrv( I2CEMEM_DRV *i2cMem )
 
         case 9:
                 // Re-send control byte with W/R=R
-                if( jDone == 1 )
+                if (jDone == 1)
                 {
                         jDone = 0;
                         state = state + 1;
                         //I2C1TRN = ( 0x00A1 ) | ( ((i2cMem->oData->csel) & 0x7) << 1 );
                         // modify slave address and read bit
-                        I2C1TRN =  ((i2cMem->oData->csel) << 1)+0x01;
+                        I2C1TRN = ((i2cMem->oData->csel) << 1) + 0x01;
                 }
 
                 break;
 
         case 10:
                 // Check, if control byte went ok
-                if( jDone == 1 )
+                if (jDone == 1)
                 {
                         jDone = 0;
                         state = state + 1;
 
-                        if( I2C1STATbits.ACKSTAT == 1 )
-                        {           // Ack Not received, Flag error and exit
+                        if (I2C1STATbits.ACKSTAT == 1)
+                        { // Ack Not received, Flag error and exit
                                 state = 16;
                         }
                 }
@@ -351,15 +352,15 @@ void I2CEMEMdrv( I2CEMEM_DRV *i2cMem )
 
         case 12:
                 // Receive data
-                if( jDone == 1 )
+                if (jDone == 1)
                 {
                         jDone = 0;
                         state = state + 1;
 
-                        *( i2cMem->oData->buff + cntr ) = I2C1RCV;
+                        *(i2cMem->oData->buff + cntr) = I2C1RCV;
                         cntr++;
 
-                        if( cntr == i2cMem->oData->n )
+                        if (cntr == i2cMem->oData->n)
                         {
                                 I2C1CONbits.ACKDT = 1; // No ACK
                         }
@@ -374,10 +375,10 @@ void I2CEMEMdrv( I2CEMEM_DRV *i2cMem )
                 break;
 
         case 13:
-                if( jDone == 1 )
+                if (jDone == 1)
                 {
                         jDone = 0;
-                        if( cntr == i2cMem->oData->n )
+                        if (cntr == i2cMem->oData->n)
                         {
                                 state = state + 1;
                         }
@@ -398,7 +399,7 @@ void I2CEMEMdrv( I2CEMEM_DRV *i2cMem )
                 break;
 
         case 15:
-                if( jDone == 1 )
+                if (jDone == 1)
                 {
                         jDone = 0;
                         state = 0;
@@ -417,7 +418,7 @@ void I2CEMEMdrv( I2CEMEM_DRV *i2cMem )
                 break;
 
         case 17:
-                if( jDone == 1 )
+                if (jDone == 1)
                 {
                         jDone = 0;
                         state = 0;
@@ -438,7 +439,7 @@ void I2CEMEMdrv( I2CEMEM_DRV *i2cMem )
                 break;
 
         case 19:
-                if( jDone == 1 )
+                if (jDone == 1)
                 {
                         jDone = 0;
                         state = 0;
@@ -454,22 +455,29 @@ void I2CEMEMdrv( I2CEMEM_DRV *i2cMem )
 
         case 20:
                 I2C1CONbits.PEN = 1;
-                while( !_MI2C1IF ); // wait for the interrupt to happen
-                while( _MI2C1IF ); // wait for intterrup be cleared.
+                while (!_MI2C1IF)
+                        ; // wait for the interrupt to happen
+                while (_MI2C1IF)
+                        ; // wait for intterrup be cleared.
                 acktest = 1;
-                while( acktest )
+                while (acktest)
                 {
                         I2C1CONbits.RSEN = 1;
-                        while( !_MI2C1IF );
-                        while( _MI2C1IF );
+                        while (!_MI2C1IF)
+                                ;
+                        while (_MI2C1IF)
+                                ;
                         I2C1TRN = 0x00A0;
-                        while( _TRSTAT );
+                        while (_TRSTAT)
+                                ;
                         acktest = I2C1STATbits.ACKSTAT;
                 }
 
                 I2C1CONbits.PEN = 1;
-                while( !_MI2C1IF );
-                while( _MI2C1IF );
+                while (!_MI2C1IF)
+                        ;
+                while (_MI2C1IF)
+                        ;
                 jDone = 0;
                 state = 14;
                 break;
