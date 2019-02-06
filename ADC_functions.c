@@ -1,6 +1,4 @@
-#if defined(__XC16__)
 #include <xc.h>
-#endif
 #include <libpic30.h>
 #include "system.h"
 #include <float.h>
